@@ -1,7 +1,34 @@
 body {
 	background-color: pink;
+	font-family: Pacifico;
 }
 
 #result {
 	visibility: hidden;	
+}
+
+#container {
+	background-color: rgba(0, 255, 255, 0.4);
+	border-radius: 20px;
+	text-align: center;
+	padding-top: 100px;
+	padding-bottom: 100px;
+	margin-top: 20%;
+	margin-left: 25%;
+	width: 50%;
+}
+
+button {
+	font-family: Pacifico;
+	border-radius: 5px;
+	background-color: white;
+	border: 1px solid black;
+	font-size: 1rem;
+	outline: none;
+}
+
+button:hover {
+	background-color: #66F70C;
+	color: white;
+	border: 1px solid white;
 }
