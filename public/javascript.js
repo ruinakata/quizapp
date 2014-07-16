@@ -4,24 +4,44 @@ var sorted;
 var scoreboard;
 var counter;
 
-var Module = (function(){
+/////////////////////MODULE////////////////////////////////////////////////////////////////////////////
+var BL = (function(){
 
-// this part is not accessible from console bc wrapped in anonymous fxn
- counter = 0;
-var score = 0;
-var	question = quizzes[counter]["q"];
-var	answer = quizzes[counter]["answer"];
-var	exp = quizzes[counter]["exp"];
-var name;
+	// this part is not accessible from console bc wrapped in anonymous fxn
+	 counter = 0;
+	var score = 0;
+	var	question = quizzes[counter]["q"];
+	var	answer = quizzes[counter]["answer"];
+	var	exp = quizzes[counter]["exp"];
+	var name;
 
-//this part is accessible from console because of this
+	//this part is accessible from console because of this
 
-	var incrementscore = function(){
-		score += 1;
-	};
-	var incrementcounter = function(){
-		counter += 1;
-	};
+		var incrementscore = function(){
+			score += 1;
+		};
+		var incrementcounter = function(){
+			counter += 1;
+		};
+
+		var incrementrightandtotal = function (){
+			quizzes[counter]["right"] += 1;
+			quizzes[counter]["total"] += 1;
+		};
+		var incrementtotal = function (){
+			quizzes[counter]["total"] += 1;
+		};
+
+		return {
+			incrementscore: incrementscore,
+			incrementcounter: incrementcounter,
+			incrementrightandtotal: incrementrightandtotal,
+			incrementtotal: incrementtotal 
+		}
+
+})();
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 	var appendanswerexp = function(){
 		$("#quizbox").append("answer: " + answer + "<br>");
 		$("#quizbox").append(exp);
@@ -37,13 +57,7 @@ var name;
 		$("#false").css("visibility", "visible")
 	};
 
-	var incrementrightandtotal = function (){
-		quizzes[counter]["right"] += 1;
-		quizzes[counter]["total"] += 1;
-	};
-	var incrementtotal = function (){
-		quizzes[counter]["total"] += 1;
-	};
+
 
 	var initial = function(){
 		score = 0;
@@ -83,13 +97,13 @@ var name;
 		if (answer == true) {
 			alert("correct!");
 			appendanswerexp();
-			incrementscore();
-			incrementrightandtotal();
+			BL.incrementscore();
+			BL.incrementrightandtotal();
 		}
 		else {
 			alert("wrong :/");
 			appendanswerexp();
-			incrementtotal();
+			BL.incrementtotal();
 		}
 	});
 
@@ -100,20 +114,20 @@ var name;
 		if (answer == false) {
 			alert("correct!");
 			appendanswerexp();
-			incrementscore();
-			incrementrightandtotal();
+			BL.incrementscore();
+			BL.incrementrightandtotal();
 
 		}
 		else {
 			alert("wrong :/");
 			appendanswerexp();
-			incrementtotal();
+			BL.incrementtotal();
 		}
 	});
 
 // when they press the next question /////////////
 	$("#next").on('click', function(){
-		incrementcounter();
+		BL.incrementcounter();
 		right = quizzes[counter]["right"];
 		total = quizzes[counter]["total"];
  		scoreboard = "<h4>People got " + right + " / " + total + " right </h4>"
@@ -136,6 +150,7 @@ var name;
 		hidetrue();
 		hidefalse();
 		$("#result").css("visibility", "hidden")
+		$("#scoreboarddiv").css('visibility', 'hidden')
 		$("#quizbox").html("<h3>" + name + " , Your score is: " + score + "</h3>")
 		everyones.push({name: name, score: score})
 	
@@ -167,21 +182,3 @@ var name;
 		$("#scoreboarddiv").html("");
 	});
 
-
-
-return {
-	incrementscore: incrementscore,
-	incrementcounter: incrementcounter,
-	appendanswerexp: appendanswerexp,
-	hidetrue: hidetrue,
-	hidefalse: hidefalse
-}
-
-})();
-
-
-//presentation logic outside. keep all business logic methods in the module
-
-
-
-// accessible thru Module.incrementscore
