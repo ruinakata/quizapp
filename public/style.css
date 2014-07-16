@@ -32,3 +32,15 @@ button:hover {
 	color: white;
 	border: 1px solid white;
 }
+
+input {
+	border: 1px black;
+	height: 1.5rem;
+	border-radius: 5px;
+	outline: none;
+	font-family: Pacifico;
+}
+
+#again {
+	visibility: hidden;
+}

@@ -1,12 +1,18 @@
 
+var everyones = []
+var sorted;
+var scoreboard;
+var counter;
+
 var Module = (function(){
 
 // this part is not accessible from console bc wrapped in anonymous fxn
-var counter = 0;
+ counter = 0;
 var score = 0;
 var	question = quizzes[counter]["q"];
 var	answer = quizzes[counter]["answer"];
 var	exp = quizzes[counter]["exp"];
+var name;
 
 //this part is accessible from console because of this
 
@@ -31,7 +37,44 @@ var	exp = quizzes[counter]["exp"];
 		$("#false").css("visibility", "visible")
 	};
 
-	$("#quizbox").html("<h3>" + question + "</h3>");
+	var incrementrightandtotal = function (){
+		quizzes[counter]["right"] += 1;
+		quizzes[counter]["total"] += 1;
+	};
+	var incrementtotal = function (){
+		quizzes[counter]["total"] += 1;
+	};
+
+	var initial = function(){
+		score = 0;
+		counter = 0;
+		question = quizzes[counter]["q"];
+	  answer = quizzes[counter]["answer"];
+	  exp = quizzes[counter]["exp"];
+		hidefalse();
+		hidetrue();
+		$("#name").val("Enter Name");
+		$("#next").css("visibility", "hidden");
+		$("#name").css("visibility", "visible")
+		$("#namesubmit").css("visibility", "visible")
+		$("#again").css("visibility", "hidden")
+	};
+
+	initial();
+
+	$("#namesubmit").on('click', function(){
+		 name = $("#name").val();
+		$("#quizbox").html("<h3>" + question + "</h3>");
+		showtruefalse();
+		$("#next").css("visibility", "visible");
+		$("#name").css("visibility", "hidden");
+		$("#namesubmit").css("visibility", "hidden");
+		right = quizzes[counter]["right"];
+		total = quizzes[counter]["total"];
+ 		scoreboard = "<h4>People got " + right + " / " + total + " right </h4>"
+ 		$("#scoreboarddiv").html(scoreboard)
+	})
+	
 
 // when they press true//////////////////////////
 	$("#true").on('click', function(){
@@ -41,10 +84,12 @@ var	exp = quizzes[counter]["exp"];
 			alert("correct!");
 			appendanswerexp();
 			incrementscore();
+			incrementrightandtotal();
 		}
 		else {
 			alert("wrong :/");
 			appendanswerexp();
+			incrementtotal();
 		}
 	});
 
@@ -56,16 +101,24 @@ var	exp = quizzes[counter]["exp"];
 			alert("correct!");
 			appendanswerexp();
 			incrementscore();
+			incrementrightandtotal();
+
 		}
 		else {
 			alert("wrong :/");
 			appendanswerexp();
+			incrementtotal();
 		}
 	});
 
 // when they press the next question /////////////
 	$("#next").on('click', function(){
 		incrementcounter();
+		right = quizzes[counter]["right"];
+		total = quizzes[counter]["total"];
+ 		scoreboard = "<h4>People got " + right + " / " + total + " right </h4>"
+ 		$("#scoreboarddiv").html(scoreboard)
+
 		showtruefalse();
 		question = quizzes[counter]["q"]
 		answer = quizzes[counter]["answer"]
@@ -83,10 +136,38 @@ var	exp = quizzes[counter]["exp"];
 		hidetrue();
 		hidefalse();
 		$("#result").css("visibility", "hidden")
-		$("#quizbox").html("<h3> Your score is: " + score + "</h3>")
+		$("#quizbox").html("<h3>" + name + " , Your score is: " + score + "</h3>")
+		everyones.push({name: name, score: score})
+	
+		topscorer = _.max(everyones, function(x) {
+				return x.score; });
+		sorted = _.sortBy(everyones, function(x){ return x.score; });
+		var l = sorted.length
+		var firstplace = sorted[l-1]
+		var secondplace = sorted[l-2]
+		var thirdplace = sorted[l-3]
+
+		$("#again").css("visibility", "visible") 
+		$("#quizbox").append("<h3> High Scores:</h3><br>")
+		$("#quizbox").append("<h3> " + firstplace['name'] + ' ' + firstplace['score'] + "</h3>")
+		if (secondplace) {
+			$("#quizbox").append("<h3> " + secondplace['name'] + ' ' + secondplace['score'] + "</h3>")
+		}
+			else {}
+		if (thirdplace){
+			$("#quizbox").append("<h3> " + thirdplace['name'] + ' ' + thirdplace['score'] + "</h3>")
+		}
+			else {}
 	});
 
-/////////////////////////////////////////////////
+// when they press play again//////////////////////
+	$("#again").on('click', function(){
+		initial();
+		$("#quizbox").html("");
+		$("#scoreboarddiv").html("");
+	});
+
+
 
 return {
 	incrementscore: incrementscore,
@@ -98,6 +179,8 @@ return {
 
 })();
 
+
+//presentation logic outside. keep all business logic methods in the module
 
 
 
