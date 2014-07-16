@@ -26,6 +26,10 @@ var	exp = quizzes[counter]["exp"];
 	var hidefalse = function(){
   	$("#false").css("visibility", "hidden")
 	};
+	var showtruefalse = function(){
+		$("#true").css("visibility", "visible")
+		$("#false").css("visibility", "visible")
+	};
 
 	$("#quizbox").html("<h3>" + question + "</h3>");
 
@@ -62,6 +66,7 @@ var	exp = quizzes[counter]["exp"];
 // when they press the next question /////////////
 	$("#next").on('click', function(){
 		incrementcounter();
+		showtruefalse();
 		question = quizzes[counter]["q"]
 		answer = quizzes[counter]["answer"]
 		exp = quizzes[counter]["exp"]
@@ -74,9 +79,12 @@ var	exp = quizzes[counter]["exp"];
 	});
 
 // when they press the results button /////////////
-$("#result").on('click', function(){
-	$("#quizbox").html("<h3> Your score is: " + score + "</h3>")
-});
+	$("#result").on('click', function(){
+		hidetrue();
+		hidefalse();
+		$("#result").css("visibility", "hidden")
+		$("#quizbox").html("<h3> Your score is: " + score + "</h3>")
+	});
 
 /////////////////////////////////////////////////
 
