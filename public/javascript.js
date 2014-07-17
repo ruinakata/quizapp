@@ -3,13 +3,14 @@ var everyones = []
 var sorted;
 var scoreboard;
 var counter;
+var score;
 
 /////////////////////MODULE////////////////////////////////////////////////////////////////////////////
 var BL = (function(){
 
 	// this part is not accessible from console bc wrapped in anonymous fxn
-	 counter = 0;
-	var score = 0;
+	counter = 0;
+	score = 0;
 	var	question = quizzes[counter]["q"];
 	var	answer = quizzes[counter]["answer"];
 	var	exp = quizzes[counter]["exp"];
@@ -47,14 +48,14 @@ var BL = (function(){
 		$("#quizbox").append(exp);
 	};
 	var hidetrue = function(){
-  	$("#true").css("visibility", "hidden")
+  	$("#true").css("display", "none")
 	};
 	var hidefalse = function(){
-  	$("#false").css("visibility", "hidden")
+  	$("#false").css("display", "none")
 	};
 	var showtruefalse = function(){
-		$("#true").css("visibility", "visible")
-		$("#false").css("visibility", "visible")
+		$("#true").css("display", "block")
+		$("#false").css("display", "block")
 	};
 
 
@@ -68,10 +69,10 @@ var BL = (function(){
 		hidefalse();
 		hidetrue();
 		$("#name").val("Enter Name");
-		$("#next").css("visibility", "hidden");
-		$("#name").css("visibility", "visible")
-		$("#namesubmit").css("visibility", "visible")
-		$("#again").css("visibility", "hidden")
+		$("#next").css("display", "none");
+		$("#name").css("display", "block")
+		$("#namesubmit").css("display", "block")
+		$("#again").css("display", "none")
 	};
 
 	initial();
@@ -80,9 +81,9 @@ var BL = (function(){
 		 name = $("#name").val();
 		$("#quizbox").html("<h3>" + question + "</h3>");
 		showtruefalse();
-		$("#next").css("visibility", "visible");
-		$("#name").css("visibility", "hidden");
-		$("#namesubmit").css("visibility", "hidden");
+		$("#next").css("display", "block");
+		$("#name").css("display", "none");
+		$("#namesubmit").css("display", "none");
 		right = quizzes[counter]["right"];
 		total = quizzes[counter]["total"];
  		scoreboard = "<h4>People got " + right + " / " + total + " right </h4>"
@@ -140,8 +141,8 @@ var BL = (function(){
 		$("#quizbox").html("<h3>" + question + "</h3>");
 
 		if (counter == 9) {
-			$("#result").css("visibility", "visible")
-			$("#next").css("visibility", "hidden");
+			$("#result").css("display", "block");
+			$("#next").css("display", "none");
 		};
 	});
 
@@ -149,8 +150,10 @@ var BL = (function(){
 	$("#result").on('click', function(){
 		hidetrue();
 		hidefalse();
-		$("#result").css("visibility", "hidden")
-		$("#scoreboarddiv").css('visibility', 'hidden')
+		$("#result").css("display", "none")
+		$("#again").css("display", "block")
+		$("#make").css("display", "block")
+		$("#scoreboarddiv").css("display", "none")
 		$("#quizbox").html("<h3>" + name + " , Your score is: " + score + "</h3>")
 		everyones.push({name: name, score: score})
 	
@@ -162,7 +165,7 @@ var BL = (function(){
 		var secondplace = sorted[l-2]
 		var thirdplace = sorted[l-3]
 
-		$("#again").css("visibility", "visible") 
+		$("#again").css("display", "block") 
 		$("#quizbox").append("<h3> High Scores:</h3><br>")
 		$("#quizbox").append("<h3> " + firstplace['name'] + ' ' + firstplace['score'] + "</h3>")
 		if (secondplace) {
@@ -181,4 +184,70 @@ var BL = (function(){
 		$("#quizbox").html("");
 		$("#scoreboarddiv").html("");
 	});
+
+
+// when they press make quiz ////////////////////////////////////////////////////////////////////////////
+	$("#make").on('click', function(){
+		$("#makequiz").show();
+		$("#container").hide();
+		quizmakecounter = 0;
+		$("#quizform").hide();
+	});
+
+// when they enter the name of quiz//////////////////
+var quizmakecounter;
+var nameofquiz;
+var quizanswer;
+var newquiz = [];
+// newquiz = ["How to eat", {}, {},..]
+
+	$("#nameenter").on('click', function(){
+		$("#quizform").show();
+		$("#nameform").hide();
+		nameofquiz = $("#quizname").val();
+		newquiz.push(nameofquiz);
+		$("#quiznameheader").append(nameofquiz);
+		quiznum = quizmakecounter + 1
+		$("#quiznameheader").append("<h3> Question number: " + quiznum + "</h3>")
+	});
+	
+	// newquiz = ["nameofquiz"]
+
+///quiz making /////////////////////////////////////////////////
+	$("#quiztrue").on('click', function(){
+		$("#quizfalse").css('background-color', 'white')
+		$("#quiztrue").css('background-color', '#3866F2')
+		quizanswer = true;
+	});
+
+	$("#quizfalse").on('click', function(){
+		$("#quiztrue").css('background-color', 'white')
+		$("#quizfalse").css('background-color', '#3866F2')
+		quizanswer = false;
+	});
+
+	$("#enter").on('click', function(){
+		var onequiz = {}
+		onequiz["id"] = quizmakecounter + 1
+		onequiz["q"] = $("#quizq").val();
+		onequiz["answer"] = quizanswer
+		onequiz["right"] = 0
+		onequiz["total"] = 0
+		newquiz.push(onequiz)
+		quizmakecounter += 1
+
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
