@@ -10,7 +10,7 @@
   <form class="start">
     <h3>Enter your name:</h3>
     <input type="text" name="playerName" />
-    <button>Start Quiz</button>
+    <button id="startquiz">Start Quiz</button>
   </form>
 
   <form class="quiz-question" style="display: none">
@@ -33,14 +33,29 @@
   </div>
 </div>
 
-<!-- 3rd-party Libraries -->
-<!-- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
-<!-- Application -->
-<!-- <script type="text/javascript" src="src/quizzy/quiz.js"></script> -->
-<!-- <script type="text/javascript" src="src/presentation/quiz-presenter.js"></script> -->
-<!-- <script type="text/javascript" src="src/quiz-repo.js"></script> -->
-<!-- Entry point -->
+
+
+
+
+
+
+
+
+
 <script type="text/javascript">
+
+
+// var $quizView = $('.quiz-app');
+// $.ajax({
+// 	url: '/quizzes',
+// 	success: function(data) {
+// 		new Quizzy.QuizPresenter($ quizView,quizData);
+// 	}
+// })
+
+
+
+
   var $quizView = $('.quiz-app');
   var presenter = new Quizzy.QuizPresenter( $quizView, Quizzy.hardcodedQuizData );
 </script>
