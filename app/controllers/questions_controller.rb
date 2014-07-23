@@ -65,6 +65,9 @@ class QuestionsController < AJAXController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_question
+      if !@quiz
+        set_quiz
+      end
       begin
         @question = @quiz.questions.find(params[:id])
       rescue ActiveRecord::RecordNotFound
