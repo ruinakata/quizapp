@@ -13,14 +13,11 @@ $(document).ready(function() {
 
 var View = {
   QuizView: function(templatedata) {
-    // $(button).on('click', ) // make the html tags for the true answer etc.
-    //append quiz titles
     console.log("in quizview")
     for (var i=0; i<quizzesarray.length; i++){
       $("#quizbox").append("<p data-quiz-id= " + parseInt(quizzesarray[i].id) + ">" + quizzesarray[i].title + "</p>")
     }
     $("[data-quiz-id]").on('click', function(){
-      // debugger
       var id = $(this).attr('data-quiz-id');
       console.log("quiz was clicked")
       $("#quizbox").empty();
@@ -29,19 +26,37 @@ var View = {
   },
 
   QuestionView : function(questionmodel) {
-    // var tftemplate = [
-    // '<p>' + question 
-    // ]
-    // var multipletemplate = 
-    // var blanktemplate = 
     console.log("in question view")
-
+////// QUESTION TEMPLATE ///////////////////////////////////////////////////
     var questiontemplate = [
       '<p>',
       questionmodel.question,
       '</p><br>'
     ].join("")
     $("#quizbox").append(questiontemplate);
+//////// ANSWER TEMPLATE ///////////////////////////////////////////////////
+    if (questionmodel.question_type === "boolean"){
+      $("#quizbox").append(
+        '<button class="boolean-answer" data-boolean="true">True</button><button class="boolean-answer" data-boolean="false">False</button>')
+      $('.boolean-answer').on('click', function() {
+        var useranswer = $(this).attr('data-boolean');
+        Presenter.checkAnswer(questionmodel.quiz_id, questionmodel.id, useranswer);
+        
+      })
+    }
+    else if (questionmodel.question_type === "multiple"){
+      $("#quizbox").append('<form action="">')
+      choicesarray = questionmodel.choices.split(";")
+      for (var i=0; i<choicesarray.length; i++){
+        $("#quizbox").append('<input type="radio" value="'+ choicesarray[i] + '">'+ choicesarray[i])
+      }
+      $("#quizbox").append('<input id="submitmultipleanswer" type="submit">')
+    }
+    else if (questionmodel.question_type === "blank"){
+      $("#quizbox").append('<input id="blankanswer" type="text">')
+      $("#quizbox").append('<input id="submitblankanswer" type="submit">')
+    }
+    else {console.log("no question type")} 
   }
 };
 
@@ -50,6 +65,7 @@ var questiontemplatedata;
 var index = 1;
 var quizzesarray = []
 var questionsarray = []
+var useranswer;
 
 var Presenter = {
   quizzes: [],
@@ -93,20 +109,27 @@ var Presenter = {
   }, 
 
   showQuizzes: function () {
+    console.log("in show quizzes")
     var me = this;
     this.getQuizzes(function() {
+      console.log("in get quizzes")
       me.renderQuizList();
     });
   },
-  renderQuizList : function() {
-    var $quizListContainer = $('#quiz-list-container');
-    for (var i in this.quizzes) {
-      var $quizListItem = $('<p data-quiz-id="' + this.quizzes[i].id + '">' + this.quizzes[i].title + '</p>');
-      $quizListContainer.append($quizListItem);
-    }
+
+  checkAnswer: function (quizid, questionid, useranswer) {
+    console.log("in check answers")
+    $.ajax({
+      url: '/quizzes/' + quizid + '/questions/' + questionid + '/check?answer=' + useranswer,
+      type: 'GET',
+      success: function (data) {
+        //data is either {"correct": "true"} or {"correct": "false"}
+        console.log(data)
+      }
+    })
+
   }
- // renderQuizView: new View.QuizView(quiztemplatedata),
- // renderQuestionView: new View.QuestionView(questiontemplatedata)
+
 };
 
 
@@ -116,23 +139,18 @@ function QuizModel(data) {
   this.title = data.title;
   this.id    = data.id;
   console.log("in quizmodel constructor")
-  // Presenter.getQuestions(this.id, function(quizQuestions) {
-  //   me.questions = makeQuestionModels(quizQuestions);
-  //   for (var i in me.questions) {
-  //     View.QuestionView(me.questions[i]);
-  //   }
-  // });
 }
 
 
 function QuestionModel(data) {
     this.question = data.question;
-    this.answer = data.answer;
+    // this.answer = data.answer;
     this.choices = data.choices;
     this.id = data.id;
     this.question_type = data.question_type;
     this.times_answered = data.times_answered;
     this.correct_answers = data.correct_answers;
+    this.quiz_id = data.quiz_id;
     console.log("in questionModel constructor")
 }
 
