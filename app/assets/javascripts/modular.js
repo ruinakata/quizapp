@@ -1,7 +1,7 @@
 
 
 $(document).ready(function() {
-  
+  score = 0;
   $("#startquiz").on('click', function(e){
     e.preventDefault(); 
     name = $("#playerName").val();
@@ -19,6 +19,7 @@ var View = {
     }
     $("[data-quiz-id]").on('click', function(){
       var id = $(this).attr('data-quiz-id');
+      quizid = id;
       console.log("quiz was clicked")
       $("#quizbox").empty();
       Presenter.getQuestions(id);
@@ -41,24 +42,39 @@ var View = {
       $('.boolean-answer').on('click', function() {
         var useranswer = $(this).attr('data-boolean');
         Presenter.checkAnswer(questionmodel.quiz_id, questionmodel.id, useranswer);
-        
+        $(".boolean-answer").hide();
       })
     }
     else if (questionmodel.question_type === "multiple"){
       $("#quizbox").append('<form action="">')
       choicesarray = questionmodel.choices.split(";")
       for (var i=0; i<choicesarray.length; i++){
-        $("#quizbox").append('<input type="radio" value="'+ choicesarray[i] + '">'+ choicesarray[i])
+        $("#quizbox").append('<input type="radio" name="choice" value="'+ choicesarray[i] + '">'+ choicesarray[i])
       }
-      $("#quizbox").append('<input id="submitmultipleanswer" type="submit">')
+      $("#quizbox").append('<input class="multipleans" id="submitmultipleanswer" type="submit">')
+      $("#submitmultipleanswer").on('click', function(){
+        var useranswer = $('input[name="choice"]:checked').val();
+        Presenter.checkAnswer(questionmodel.quiz_id, questionmodel.id, useranswer);
+        $(".multipleans").hide();
+      })
     }
     else if (questionmodel.question_type === "blank"){
       $("#quizbox").append('<input id="blankanswer" type="text">')
       $("#quizbox").append('<input id="submitblankanswer" type="submit">')
+      $("#submitblankanswer").on('click', function(){
+        var useranswer = $("#blankanswer").val();
+        Presenter.checkAnswer(questionmodel.quiz_id, questionmodel.id, useranswer);
+        $("#submitblankanswer").hide();
+      })
     }
-    else {console.log("no question type")} 
+    $("#done").on('click', function(){
+      console.log('donezo')
+      // Presenter.getScore();
+    })
   }
 };
+
+
 
 var quiztemplatedata;
 var questiontemplatedata;
@@ -66,6 +82,7 @@ var index = 1;
 var quizzesarray = []
 var questionsarray = []
 var useranswer;
+var quizid;
 
 var Presenter = {
   quizzes: [],
@@ -125,10 +142,28 @@ var Presenter = {
       success: function (data) {
         //data is either {"correct": "true"} or {"correct": "false"}
         console.log(data)
+        if (data.correct === "true") {
+          score += 1;
+        }
       }
     })
+  },
 
-  }
+  // getScore: function (quizid){
+  //   $.ajax({
+  //     url: '/quizzes/' + quizid + '/questions',
+  //     type: 'GET',
+  //     success: function (data) {
+  //       // data is an array of question objects 
+  //       // callback(data);
+  //       for (var i=0; i<data.length; i++) {
+  //         allquestions.push (data[i])
+  //       }
+  //       console.log("allquestions now has all question objects for that quiz")
+
+  //     }
+  //   })
+  // }
 
 };
 
