@@ -1,16 +1,11 @@
 
-var everyones = []
-var sorted;
-var scoreboard;
-var counter;
-var score;
-
-/////////////////////MODULE////////////////////////////////////////////////////////////////////////////
+////////////////////     Business Logic     ////////////////////////////////////////////////////////////////////////////
 var BL = (function(){
-
-	// this part is not accessible from console bc wrapped in anonymous fxn
-	counter = 0;
-	score = 0;
+	var everyones = []
+	var sorted;
+	var scoreboard;
+	var counter = 0;
+	var score = 0;
 	var	question = quizzes[counter]["q"];
 	var	answer = quizzes[counter]["answer"];
 	var	exp = quizzes[counter]["exp"];
@@ -18,29 +13,76 @@ var BL = (function(){
 
 	//this part is accessible from console because of this
 
-		var incrementscore = function(){
-			score += 1;
-		};
-		var incrementcounter = function(){
-			counter += 1;
-		};
+	var returnquiz = {
+		question: quizzes[counter]["q"],
+		answer: quizzes[counter]["answer"],
+		exp: quizzes[counter]["exp"]
+	};
 
-		var incrementrightandtotal = function (){
-			quizzes[counter]["right"] += 1;
-			quizzes[counter]["total"] += 1;
-		};
-		var incrementtotal = function (){
-			quizzes[counter]["total"] += 1;
-		};
+	var state = {
+		everyones: function(){ return everyones },
+		sorted: function(){ return sorted },
+		scoreboard: function(){ return scoreboard },
+		counter: function(){ return counter },
+		score: function(){return score }
+	};
 
-		return {
-			incrementscore: incrementscore,
-			incrementcounter: incrementcounter,
-			incrementrightandtotal: incrementrightandtotal,
-			incrementtotal: incrementtotal 
-		}
+	var incrementscore = function(){
+		score += 1;
+	};
+	var incrementcounter = function(){
+		counter += 1;
+	};
+
+	var incrementrightandtotal = function (){
+		quizzes[counter]["right"] += 1;
+		quizzes[counter]["total"] += 1;
+	};
+	var incrementtotal = function (){
+		quizzes[counter]["total"] += 1;
+	};
+
+	var setup = function() {
+		score = 0;
+		counter = 0;
+		question = quizzes[counter]["q"];
+	  answer = quizzes[counter]["answer"];
+	  exp = quizzes[counter]["exp"];
+	};
+
+	return {
+		setup: setup,
+		incrementscore: incrementscore,
+		incrementcounter: incrementcounter,
+		incrementrightandtotal: incrementrightandtotal,
+		incrementtotal: incrementtotal,
+		returnquiz: returnquiz
+	}
 
 })();
+////////////////////    Controller     ///////////////////////////////////////////////////////////////
+var Controller = {
+	setup: function() {
+		BL.setup();
+		View.setup();
+	},
+	nextQuestion: function() {
+		var nextQuestionValues = BL.nextQuestion();
+		View.showNextQuestion(nextQuestionValues);
+	}
+};
+////////////////////     View     ///////////////////////////////////////////////////////////////////
+var View = {
+	setup: function() {
+		hidefalse();
+		hidetrue();
+		$("#name").val("Enter Name");
+		$("#next").css("display", "none");
+		$("#name").css("display", "block")
+		$("#namesubmit").css("display", "block")
+		$("#again").css("display", "none")
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 	var appendanswerexp = function(){
@@ -48,57 +90,36 @@ var BL = (function(){
 		$("#quizbox").append(exp);
 	};
 	var hidetrue = function(){
-  	$("#true").hide();
+  	$("#true").css("display", "none")
 	};
 	var hidefalse = function(){
-  	$("#false").hide();
+  	$("#false").css("display", "none")
 	};
 	var showtruefalse = function(){
-		$("#true").show();
-		$("#false").show();
+		$("#true").css("display", "block")
+		$("#false").css("display", "block")
 	};
 
-	var showscoreboard = function(){
+	View.setup();
+
+	$("#namesubmit").on('click', function(){
+		 name = $("#name").val();
+		 var question = BL.returnquiz.question
+		$("#quizbox").html("<h3>" + question + "</h3>");
+		showtruefalse();
+		$("#next").css("display", "block");
+		$("#name").css("display", "none");
+		$("#namesubmit").css("display", "none");
 		right = quizzes[counter]["right"];
 		total = quizzes[counter]["total"];
  		scoreboard = "<h4>People got " + right + " / " + total + " right </h4>"
  		$("#scoreboarddiv").html(scoreboard)
- 		$("#scoreboarddiv").show();
-	};
-
-
-	var initial = function(){
-		score = 0;
-		counter = 0;
-		question = quizzes[counter]["q"];
-	  answer = quizzes[counter]["answer"];
-	  exp = quizzes[counter]["exp"];
-		hidefalse();
-		hidetrue();
-		$("#name").val("Enter Name");
-		$("#next").hide();
-		$("#name").show();
-		$("#namesubmit").show();
-		$("#again").hide();
-	};
-
-	initial();
-
-	$("#namesubmit").on('click', function(){
-		 name = $("#name").val();
-		$("#quizbox").html("<h3>" + question + "</h3>");
-		showtruefalse();
-		$("#next").show();
-		$("#name").hide();
-		$("#namesubmit").hide();
- 		showscoreboard();
 	})
 	
 
 // when they press true//////////////////////////
 	$("#true").on('click', function(){
 		hidefalse();
-		hidetrue();
 		if (answer == true) {
 			alert("correct!");
 			appendanswerexp();
@@ -121,6 +142,7 @@ var BL = (function(){
 			appendanswerexp();
 			BL.incrementscore();
 			BL.incrementrightandtotal();
+		hidetrue();
 
 		}
 		else {
@@ -145,8 +167,8 @@ var BL = (function(){
 		$("#quizbox").html("<h3>" + question + "</h3>");
 
 		if (counter == 9) {
-			$("#result").show();
-			$("#next").hide();
+			$("#result").css("display", "block");
+			$("#next").css("display", "none");
 		};
 	});
 
@@ -157,7 +179,7 @@ var BL = (function(){
 		$("#result").hide();
 		$("#again").show();
 		$("#make").show();
-		$("#scoreboarddiv").hide();
+		$("#scoreboarddiv").css("display", "none")
 		$("#quizbox").html("<h3>" + name + " , Your score is: " + score + "</h3>")
 		everyones.push({name: name, score: score})
 	
